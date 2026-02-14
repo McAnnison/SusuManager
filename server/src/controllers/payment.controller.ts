@@ -87,7 +87,7 @@ export const getPaymentById = async (req: Request, res: Response): Promise<void>
     const { id } = req.params;
 
     const payment = await prisma.payment.findUnique({
-      where: { id },
+      where: { id: id as string },
       include: {
         member: {
           select: {
@@ -124,7 +124,7 @@ export const deletePayment = async (req: Request, res: Response): Promise<void> 
     const { id } = req.params;
 
     await prisma.payment.delete({
-      where: { id },
+      where: { id: id as string },
     });
 
     res.json({ message: 'Payment deleted successfully' });

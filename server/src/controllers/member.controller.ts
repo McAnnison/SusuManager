@@ -76,7 +76,7 @@ export const getMemberById = async (req: Request, res: Response): Promise<void> 
     const { id } = req.params;
 
     const member = await prisma.member.findUnique({
-      where: { id },
+      where: { id: id as string },
       include: {
         collector: {
           select: {
@@ -118,7 +118,7 @@ export const updateMember = async (req: Request, res: Response): Promise<void> =
     if (active !== undefined) data.active = active;
 
     const member = await prisma.member.update({
-      where: { id },
+      where: { id: id as string },
       data,
     });
 
@@ -135,7 +135,7 @@ export const deleteMember = async (req: Request, res: Response): Promise<void> =
     const { id } = req.params;
 
     await prisma.member.delete({
-      where: { id },
+      where: { id: id as string },
     });
 
     res.json({ message: 'Member deleted successfully' });

@@ -83,9 +83,9 @@ export const getDashboardSummary = async (req: Request, res: Response): Promise<
     // Get member details for top contributors
     const topContributors = await Promise.all(
       memberContributions
-        .sort((a, b) => (b._sum.amount || 0) - (a._sum.amount || 0))
+        .sort((a: any, b: any) => (b._sum.amount || 0) - (a._sum.amount || 0))
         .slice(0, 5)
-        .map(async (contribution) => {
+        .map(async (contribution: any) => {
           const member = await prisma.member.findUnique({
             where: { id: contribution.memberId },
             select: {
