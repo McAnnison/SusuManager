@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model linked to Supabase Auth UID
+model User {
+  id        String   @id @default(uuid())
+  authId    String   @unique // Supabase auth UID
+  email     String   @unique
+  name      String?
+  role      String   @default("collector") // collector, admin
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members  Member[]
+  payments Payment[]
+
+  @@map("users")
+}
+
+// Member model for Susu members
+model Member {
+  id                  String   @id @default(uuid())
+  name                String
+  phone               String?
+  dailyContribution   Float    // Expected daily contribution amount
+  collectorId         String
+  active              Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  collector User      @relation(fields: [collectorId], references: [id], onDelete: Cascade)
+  payments  Payment[]
+
+  @@map("members")
+}
+
+// Payment model for tracking daily payments
+model Payment {
+  id          String   @id @default(uuid())
+  amount      Float
+  date        DateTime @default(now())
+  memberId    String
+  collectorId String
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  member    Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  collector User   @relation(fields: [collectorId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+  @@index([memberId])
+  @@index([collectorId])
+  @@index([date])
+}
